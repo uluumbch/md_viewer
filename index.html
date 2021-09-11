@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- <link rel="stylesheet" href="tailwind.min.css"> -->
+    <link rel="stylesheet" href="index.css">
+    <link rel="stylesheet" href="highlight/styles/atom-one-dark.min.css">
+    <title>Markdown VIewer</title>
+</head>
+
+<body>
+    <div class="container">
+        <label for="fileUpload">
+            <div class="drag">Click or drop .md file here</div>
+            <input type="file" name="file" id="fileUpload" class="box-border pt-5 pb-8">
+        </label>
+        <p id="filename"></p>
+        <h3 class="text-center">Or</h3>
+        <textarea placeholder="write some text here..." name="md_text" id="md_text" cols="20" rows="10"></textarea>
+        <div class="btn-container">
+            <button id="save" class="save">save</button>
+            <button id="hide" class="info">hide</button>
+        </div>
+
+        <article id="html"></article>
+    </div>
+    <script src="FileSaver.js"></script>
+    <script src="highlight/highlight.min.js"></script>
+    <script src="showdown.min.js"></script>
+    <script>
+        var converter = new showdown.Converter()
+        var fileInput = document.getElementById("fileUpload")
+        var filenameContainer = document.querySelector('#filename');
+        var dropzone = document.querySelector('div');
+
+        fileInput.addEventListener('change', function () {
+            filenameContainer.textContent = fileInput.value.split('\\').pop();
+            let fr = new FileReader();
+            const file = event.target.files[0];
+            fr.addEventListener('load', event => {
+                let text = document.getElementById("md_text").value = event.target.result;
+                document.getElementById("html").innerHTML = converter.makeHtml(text);
+            })
+            fr.readAsText(file)
+            hljs.highlightAll();
+
+        });
+
+        fileInput.addEventListener('dragenter', function () {
+            dropzone.classList.add('dragover');
+        });
+
+        fileInput.addEventListener('dragleave', function () {
+            dropzone.classList.remove('dragover');
+        });
+        // document.getElementById("fileUpload").addEventListener('change', () => {
+        //     let fr = new FileReader();
+        //     const file = event.target.files[0];
+        //     fr.addEventListener('load', event => {
+        //         let text = document.getElementById("md_text").value = event.target.result;
+        //         document.getElementById("html").innerHTML = converter.makeHtml(text);
+        //     })
+        //     fr.readAsText(file)
+        // })
+        document.getElementById("md_text").addEventListener('keyup', () => {
+            let md_text = document.getElementById("md_text").value;
+            document.getElementById("html").innerHTML = converter.makeHtml(md_text);
+            // hljs.highlighAll() digunakan untuk menjankan kode, ubah wara tag code
+            hljs.highlightAll();
+        })
+
+        // fungsi dibawah menjalankan perintah untuk menyimpan file menggunakan FileSaver.js
+        // https://github.com/eligrey/FileSaver.js
+        document.getElementById("save").addEventListener('click', () => {
+            let md_text = document.getElementById("md_text").value;
+            let blob = new Blob([md_text], { type: "text/plain;charset=utf-8" });
+            saveAs(blob, "markdown.md");
+        })
+        document.getElementById("hide").addEventListener('click', () => {
+            let md_text = document.getElementById("md_text")
+            let btn = document.getElementById("hide");
+            if (md_text.style.display == "none") {
+                btn.innerText = "hide"
+                md_text.style.display = "initial";
+            } else {
+                btn.innerText = "show"
+                md_text.style.display = "none";
+            }
+
+        })
+
+    </script>
+</body>
+
+</html>
+
+<body>
