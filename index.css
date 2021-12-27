@@ -300,4 +300,5 @@ textarea:focus {
 }
 article {
   margin: 0 3rem;
+  padding-bottom: 3rem;
 }
